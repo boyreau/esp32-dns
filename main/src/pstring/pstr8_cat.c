@@ -6,11 +6,13 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/23 01:08:49 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/23 02:07:44 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/02/23 02:38:21 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
 #include "pstring.h"
+
+#include <string.h>
 
 pstr8_t pstr8_cat(pstr8_t s1, pstr8_t s2)
 {
