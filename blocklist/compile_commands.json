@@ -1,0 +1,53 @@
+[
+  {
+    "arguments": [
+      "/bin/clang",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "include/",
+      "-c",
+      "-o",
+      "obj/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/Zoe/dev/dns/blocklist",
+    "file": "/home/Zoe/dev/dns/blocklist/src/main.c",
+    "output": "/home/Zoe/dev/dns/blocklist/obj/main.o"
+  },
+  {
+    "arguments": [
+      "/bin/clang",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "include/",
+      "-c",
+      "-o",
+      "obj/trie.o",
+      "src/trie.c"
+    ],
+    "directory": "/home/Zoe/dev/dns/blocklist",
+    "file": "/home/Zoe/dev/dns/blocklist/src/trie.c",
+    "output": "/home/Zoe/dev/dns/blocklist/obj/trie.o"
+  },
+  {
+    "arguments": [
+      "/bin/clang",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "include/",
+      "-c",
+      "-o",
+      "obj/pstring.o",
+      "src/pstring.c"
+    ],
+    "directory": "/home/Zoe/dev/dns/blocklist",
+    "file": "/home/Zoe/dev/dns/blocklist/src/pstring.c",
+    "output": "/home/Zoe/dev/dns/blocklist/obj/pstring.o"
+  }
+]

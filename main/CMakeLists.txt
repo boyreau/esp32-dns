@@ -1,8 +1,22 @@
 idf_component_register(
-					SRCS "src/udp_server.c" "src/dns.c" "src/server.c" "src/list.c"
-                    INCLUDE_DIRS "include")
+					SRCS
+						"src/server.c"
+						"src/udp_server.c"
+
+						"src/dns/dns.c"
+						"src/dns/dns_read_labels.c"
+
+						"src/list.c"
+
+						"src/trie/trie.c"
+
+						"src/pstring/pstr8_cat.c"
+						"src/pstring/pstr8_join.c"
+						"src/pstring/pstr8_len.c"
+						"src/pstring/pstr8_rev.c"
+                    INCLUDE_DIRS
+						"include")
 
 idf_build_set_property(COMPILE_OPTIONS "-Wall" APPEND)
 idf_build_set_property(COMPILE_OPTIONS "-Wextra" APPEND)
 idf_build_set_property(COMPILE_OPTIONS "-Werror" APPEND)
-idf_build_set_property(COMPILE_OPTIONS "-O1" APPEND)

@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/19 12:37:58 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/20 18:34:27 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/02/23 02:34:21 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -51,44 +51,37 @@ receive_packet(int sock, struct sockaddr_storage *source_addr, void *packet)
 	return len;
 }
 
-static void dump_mem_str(char *buf, size_t size)
+static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 {
-	for (size_t i = 0; i < size; i++)
-	{
-		if (isprint((int) buf[i]))
-		{
-			putchar(buf[i]);
-			buf[i] = '\0';
-		}
-	}
-	putchar('\n');
-}
-
-int handle_request(int sock, struct sockaddr_storage *source_addr) // NOLINT
-{
-	int messagelen = 0;
-
+	int					  messagelen = 0;
 	struct dns_packet	  packet;
 	struct dns_header	 *header = (void *) &packet;
 	struct dns_questions *questions =
 		(void *) ((char *) &packet + DNS_HEADER_BYTE_SIZE);
 	label_list *labels = NULL;
 
+	messagelen = receive_packet(sock, source_addr, &packet);
+	if (messagelen < 0)
+	{
+		ESP_LOGE(TAG, "Error occurred during receive: errno %d", errno);
+		return -1;
+	}
+	dns_ntoh_header(header);
+
+	for (int i = 0; i < header->qdcount; i++)
+	{
+		dns_read_labels(&labels, (char *) questions, messagelen);
+		// TODO: handle labels
+	}
+	return 0;
+}
+
+int handle_request(int sock, struct sockaddr_storage *source_addr)
+{
 	ESP_LOGI(TAG, "Sizeof pointer: %u", sizeof(struct trie_s *));
 	while (1)
 	{
-		messagelen = receive_packet(sock, source_addr, header);
-		if (messagelen < 0)
-		{
-			ESP_LOGE(TAG, "Error occurred during receive: errno %d", errno);
+		if (receive_and_respond(sock, source_addr))
 			return -1;
-		}
-		dns_ntoh_header(header);
-
-		for (int i = 0; i < header->qdcount; i++)
-		{
-			dns_read_labels(&labels, (char *) questions, messagelen);
-			// TODO: handle labels
-		}
 	}
 }

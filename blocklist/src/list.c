@@ -1,36 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                              ++            */
-/*   trie.c                                                    +**+   +*  *   */
+/*   list.c                                                    +**+   +*  *   */
 /*                                                             ##%#*###*+++   */
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
-/*   Created: 2025/02/20 22:24:39 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/21 00:38:55 by aboyreau          +#-.-*  +         *    */
+/*   Created: 2025/02/20 12:25:36 by aboyreau          **+*+  * -_._-   #+    */
+/*   Updated: 2025/02/20 12:32:31 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
-#include "pstring.h"
-#include "trie.h"
+#include "llist.h"
 
-#include <stdlib.h>
+#include <stddef.h>
 
-uint8_t indexof(pstring8_t set, char c)
+void lst_add_back(label_list **l, label_list *new)
 {
-	for (uint8_t i = 1; i <= *set; i++)
-		if (set[i] == c)
-			return i;
-	return 0;
-}
-
-void trie_add(struct trie_s *head, pstring8_t str)
-{
-	for (uint8_t i = 1; i <= *str; i++)
-	{
-		if (head->children[i] == NULL)
-		{
-			head->children[i]		  = malloc(sizeof(trie_t));
-			head->children[i]->letter = str[i];
-		}
-	}
+	while (*l != NULL)
+		l = &((*l)->next);
+	*l = new;
 }
