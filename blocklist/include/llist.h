@@ -17,8 +17,8 @@ typedef struct s_list
 {
 		struct s_list *next;
 		char		  *label;
-} label_list;
+} linked_list;
 
-void lst_add_back(label_list **l, label_list *new);
+void lst_add_back(linked_list **l, linked_list *new);
 
 #endif

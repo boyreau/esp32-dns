@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/20 22:24:39 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/23 02:30:35 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/02/24 03:24:39 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -60,4 +60,16 @@ void trie_display(struct trie_s *head, uint8_t depth, char str[])
 			trie_display(head->children[i], depth + 1, str);
 		}
 	}
+}
+
+void *trie_get(struct trie_s *head, pstr8_t str)
+{
+	for (uint8_t i = 1; i <= pstr8_len(str); i++)
+	{
+		int index = trie_indexof(str[i]);
+		if (head->children[index] == NULL)
+			return NULL;
+		head = head->children[index];
+	}
+	return head->children[0];
 }

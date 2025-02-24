@@ -5,83 +5,85 @@
 /*                                                             ##%#*###*+++   */
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
-/*   Created: 2025/02/19 12:37:58 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/23 02:34:21 by aboyreau          +#-.-*  +         *    */
+/*   Created: 2025/02/24 02:30:05 by aboyreau          **+*+  * -_._-   #+    */
+/*   Updated: 2025/02/24 02:35:11 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
-#include "dns.h"
 #include "esp_log.h"
-#include "llist.h"
+#include "handler.h"
 #include "lwip/sockets.h"
 #include "server.h"
-#include "trie.h"
 
 #include <lwip/netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/param.h>
 
-static const char *TAG = __FILE__;
+#define PORT 53
 
-static int
-receive_packet(int sock, struct sockaddr_storage *source_addr, void *packet)
+extern const char *TAG;
+
+int create_socket(int addr_family, struct sockaddr_in6 *dest_addr)
 {
-	ESP_LOGI(TAG, "Dest: %p", (void *) packet);
-	socklen_t socklen = sizeof(*source_addr);
+	int					ip_protocol	  = IPPROTO_IP;
+	struct sockaddr_in *dest_addr_ip4 = (struct sockaddr_in *) dest_addr;
+	dest_addr_ip4->sin_addr.s_addr	  = htonl(INADDR_ANY);
+	dest_addr_ip4->sin_family		  = AF_INET;
+	dest_addr_ip4->sin_port			  = htons(PORT);
 
-	int len = recvfrom(
-		sock,
-		packet,
-		DNS_PACKET_SIZE_MAX,
-		0,
-		(struct sockaddr *) source_addr,
-		&socklen
-	);
-	if (len < 0)
-	{
-		ESP_LOGE(
-			TAG,
-			"Error occurred during recvfrom: errno %d: %s",
-			errno,
-			strerror(errno)
-		);
-		return -1;
-	}
-	return len;
+	return socket(addr_family, SOCK_DGRAM, ip_protocol);
 }
 
-static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
+int bind_socket_to_port(int sock, struct sockaddr_in6 *dest_addr)
 {
-	int					  messagelen = 0;
-	struct dns_packet	  packet;
-	struct dns_header	 *header = (void *) &packet;
-	struct dns_questions *questions =
-		(void *) ((char *) &packet + DNS_HEADER_BYTE_SIZE);
-	label_list *labels = NULL;
+	int enable = 1;
+	lwip_setsockopt(sock, IPPROTO_IP, IP_TTL, &(int) {60}, sizeof(int));
+	lwip_setsockopt(sock, IPPROTO_IP, IP_PKTINFO, &enable, sizeof(enable));
+	lwip_setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
+	lwip_setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(enable));
 
-	messagelen = receive_packet(sock, source_addr, &packet);
-	if (messagelen < 0)
-	{
-		ESP_LOGE(TAG, "Error occurred during receive: errno %d", errno);
-		return -1;
-	}
-	dns_ntoh_header(header);
-
-	for (int i = 0; i < header->qdcount; i++)
-	{
-		dns_read_labels(&labels, (char *) questions, messagelen);
-		// TODO: handle labels
-	}
-	return 0;
+	return bind(sock, (struct sockaddr *) dest_addr, sizeof(*dest_addr));
 }
 
-int handle_request(int sock, struct sockaddr_storage *source_addr)
+int server_setup(int addr_family, struct sockaddr_in6 *dest_addr)
 {
-	ESP_LOGI(TAG, "Sizeof pointer: %u", sizeof(struct trie_s *));
+	int sock = create_socket(addr_family, dest_addr);
+	if (sock < 0)
+	{
+		ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
+		return -1;
+	}
+	ESP_LOGI(TAG, "Socket created");
+
+	int err = bind_socket_to_port(sock, dest_addr);
+	if (err < 0)
+	{
+		ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
+		close(sock);
+		return -1;
+	}
+	ESP_LOGI(TAG, "Socket bound, port %d", PORT);
+	return sock;
+}
+
+void udp_server_task(void *pvParameters)
+{
+	int					addr_family = (int) pvParameters;
+	struct sockaddr_in6 dest_addr;
+
 	while (1)
 	{
-		if (receive_and_respond(sock, source_addr))
-			return -1;
+		int						sock = server_setup(addr_family, &dest_addr);
+		struct sockaddr_storage source_addr;
+
+		int err = handle_request(sock, &source_addr);
+		if (err < 0)
+		{
+			ESP_LOGE(TAG, "Shutting down socket and restarting...");
+			shutdown(sock, 0);
+			close(sock);
+		}
 	}
+	vTaskDelete(NULL);
 }

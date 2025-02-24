@@ -14,7 +14,7 @@
 
 #include <stddef.h>
 
-void lst_add_back(label_list **l, label_list *new)
+void lst_add_back(linked_list **l, linked_list *new)
 {
 	while (*l != NULL)
 		l = &((*l)->next);

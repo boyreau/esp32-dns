@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/17 22:57:37 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/20 16:59:46 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/02/24 02:56:03 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define DNS_H
 
 #include "llist.h"
+#include "pstring.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -93,10 +94,10 @@ struct dns_packet
 		};
 };
 
-int	 dns_write_header(struct dns_header *header, char *response);
-int	 dns_read_header(struct dns_header *header, FILE *inputstream);
-int	 dns_read_labels(label_list **labels, char *message, size_t messagelen);
-void dns_log_header(struct dns_header *header);
-void dns_ntoh_header(struct dns_header *header);
+int		dns_write_header(struct dns_header *header, char *response);
+int		dns_read_header(struct dns_header *header, FILE *inputstream);
+pstr8_t dns_read_labels(char *message, size_t messagelen);
+void	dns_log_header(struct dns_header *header);
+void	dns_ntoh_header(struct dns_header *header);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/20 17:27:47 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/22 15:13:15 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/02/24 03:13:03 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -36,5 +36,6 @@ typedef struct trie_s
 uint8_t trie_indexof(int c);
 void	trie_add(trie_t *head, pstr8_t str);
 void	trie_display(struct trie_s *head, uint8_t depth, char str[]);
+void   *trie_get(struct trie_s *head, pstr8_t str);
 
 #endif

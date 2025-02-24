@@ -1,7 +1,9 @@
 idf_component_register(
 					SRCS
+						"src/main.c"
+
 						"src/server.c"
-						"src/udp_server.c"
+						"src/handler.c"
 
 						"src/dns/dns.c"
 						"src/dns/dns_read_labels.c"
