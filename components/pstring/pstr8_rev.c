@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                              ++            */
-/*   server.h                                                  +**+   +*  *   */
+/*   pstring_rev.c                                             +**+   +*  *   */
 /*                                                             ##%#*###*+++   */
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
-/*   Created: 2025/02/19 12:37:48 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 18:34:23 by aboyreau          +#-.-*  +         *    */
+/*   Created: 2025/02/23 02:16:41 by aboyreau          **+*+  * -_._-   #+    */
+/*   Updated: 2025/02/23 02:19:42 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
-#ifndef SERVER_H
-#define SERVER_H
+#include "pstring.h"
 
-#ifndef TAG
-#define TAG "SERVER"
-#endif
+void pstr8_rev(pstr8_t s)
+{
+	uint8_t l = 1;
+	uint8_t r = pstr8_len(s) - 1;
 
-#include <lwip/netdb.h>
+	while (l < r)
+	{
+		s[l] = (char) (s[l] ^ s[r]);
+		s[r] = (char) (s[l] ^ s[r]);
+		s[l] = (char) (s[l] ^ s[r]);
 
-int	 server_setup(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 create_socket(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 bind_socket_to_port(int sock, struct sockaddr_in6 *dest_addr);
-void udp_server_task(void *pvParameters);
-
-#endif
+		l++;
+		r--;
+	}
+}

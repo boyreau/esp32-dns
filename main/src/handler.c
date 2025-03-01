@@ -6,23 +6,24 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/19 12:37:58 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/24 03:34:54 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/01 19:48:14 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
+#include "cc.h"
 #include "dns.h"
 #include "esp_log.h"
-#include "llist.h"
 #include "lwip/sockets.h"
-#include "server.h"
+#include "pstring.h"
 #include "trie.h"
 
 #include <lwip/netdb.h>
-#include <stdio.h>
 #include <string.h>
 #include <sys/param.h>
 
-static const char *TAG = __FILE__;
+#ifndef TAG
+#define TAG "HANDLER"
+#endif
 
 static int
 receive_packet(int sock, struct sockaddr_storage *source_addr, void *packet)
@@ -53,11 +54,9 @@ receive_packet(int sock, struct sockaddr_storage *source_addr, void *packet)
 
 static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 {
-	int					  messagelen = 0;
-	struct dns_packet	  packet;
-	struct dns_header	 *header = (void *) &packet;
-	struct dns_questions *questions =
-		(void *) ((char *) &packet + DNS_HEADER_BYTE_SIZE);
+	int				   messagelen = 0;
+	struct dns_packet  packet;
+	struct dns_header *header = &packet.header;
 
 	static struct trie_s head = {0};
 
@@ -69,32 +68,57 @@ static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 	}
 	dns_ntoh_header(header);
 
-	for (int i = 0; i < header->qdcount; i++)
+	// Update header
+	header->qr		= 1;
+	header->opcode	= 0;
+	header->rd		= 0;
+	header->ra		= 0;
+	header->rcode	= 0;
+	header->ancount = 0;
+
+	uint16_t index = DNS_HEADER_BYTE_SIZE;
+	for (uint16_t i = 0; i < header->qdcount; i++)
 	{
-		pstr8_t dns = dns_read_labels((char *) questions, messagelen);
-		int		ip	= (int) trie_get(&head, dns);
+		char *question_address = (char *) &packet + index;
+		ESP_LOGI(TAG, "Reading from: %p", (void *) question_address);
+		struct dns_question q =
+			dns_parse_question((void *) question_address, messagelen - index);
+		dns_log_question(q);
+
+		int ip = (int) trie_get(&head, q.qname);
 		if (ip == 0)
 		{
 			// TODO Recursive query
 		}
-		header->qr		= 1;
-		header->opcode	= 0;
-		header->rd		= 0;
-		header->ra		= 0;
-		header->qdcount = 1;
-		header->ancount = 1;
-		memcpy((char *) questions + pstr8_len(dns) + 1, dns, *dns + 1);
-		// Build DNS answer and send it
-		dns_ntoh_header(header);
-		sendto(
-			sock,
-			header,
-			512,
-			0,
-			(struct sockaddr *) source_addr,
-			sizeof(*source_addr)
-		);
+		struct dns_rr an = {
+			.type	  = htons(1),
+			.class	  = htons(1),
+			.ttl	  = htonl(0),
+			.rdlength = htons(4),
+			.rddata	  = (uint32_t) htonl(ip)
+		};
+		// Copy the DNS labels
+		memcpy(packet.raw + index, question_address, pstr8_len(q.qname) + 2);
+		index += pstr8_len(q.qname) + 2;
+		memcpy(packet.raw + index, &an, sizeof(an));
+		index += sizeof(uint32_t);
+		header->ancount++;
 	}
+
+	// build the answer
+
+	dns_ntoh_header(header);
+
+	sendto(
+		sock,
+		&packet,
+		512,
+		// DNS_HEADER_BYTE_SIZE + pstr8_len(dns) + 5 + pstr8_len(dns) + 1 +
+		// sizeof(struct dns_rr),
+		0,
+		(struct sockaddr *) source_addr,
+		sizeof(*source_addr)
+	);
 	return 0;
 }
 

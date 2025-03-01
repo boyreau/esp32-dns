@@ -1,27 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                              ++            */
-/*   server.h                                                  +**+   +*  *   */
+/*   dns.c                                                     +**+   +*  *   */
 /*                                                             ##%#*###*+++   */
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
-/*   Created: 2025/02/19 12:37:48 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 18:34:23 by aboyreau          +#-.-*  +         *    */
+/*   Created: 2025/02/17 22:58:38 by aboyreau          **+*+  * -_._-   #+    */
+/*   Updated: 2025/03/01 20:10:22 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
-#ifndef SERVER_H
-#define SERVER_H
+#include "dns.h"
 
-#ifndef TAG
-#define TAG "SERVER"
-#endif
+const char *dns_classes[] = {
+	"  ",
+	"IN",
+	"CS",
+	"CH",
+	"HS",
+};
 
-#include <lwip/netdb.h>
-
-int	 server_setup(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 create_socket(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 bind_socket_to_port(int sock, struct sockaddr_in6 *dest_addr);
-void udp_server_task(void *pvParameters);
-
-#endif
+const char *dns_types[] = {
+	"",
+	"A",
+	"NS",
+	"MD",
+	"MF",
+	"CNAME",
+	"SOA",
+	"MB",
+	"MG",
+	"MR",
+	"NuLL",
+	"WKS",
+	"PTR",
+	"HINFO",
+	"MINFO",
+	"MX",
+	"TXT",
+};

@@ -1,27 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                              ++            */
-/*   server.h                                                  +**+   +*  *   */
+/*   pstr8_cat.c                                               +**+   +*  *   */
 /*                                                             ##%#*###*+++   */
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
-/*   Created: 2025/02/19 12:37:48 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 18:34:23 by aboyreau          +#-.-*  +         *    */
+/*   Created: 2025/02/23 01:08:49 by aboyreau          **+*+  * -_._-   #+    */
+/*   Updated: 2025/02/23 02:38:21 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
-#ifndef SERVER_H
-#define SERVER_H
+#include "pstring.h"
 
-#ifndef TAG
-#define TAG "SERVER"
-#endif
+#include <string.h>
 
-#include <lwip/netdb.h>
-
-int	 server_setup(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 create_socket(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 bind_socket_to_port(int sock, struct sockaddr_in6 *dest_addr);
-void udp_server_task(void *pvParameters);
-
-#endif
+pstr8_t pstr8_cat(pstr8_t s1, pstr8_t s2)
+{
+	return memcpy(s1 + pstr8_len(s1) + 1, s2 + 1, pstr8_len(s2));
+}

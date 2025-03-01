@@ -1,0 +1,9 @@
+idf_component_register(
+	SRCS
+		"pstr8_cat.c"
+		"pstr8_join.c"
+		"pstr8_len.c"
+		"pstr8_rev.c"
+    INCLUDE_DIRS
+		"include"
+)

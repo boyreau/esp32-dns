@@ -6,13 +6,12 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/22 18:14:49 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/24 02:55:53 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/01 18:30:26 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
 #include "dns.h"
 #include "esp_log.h"
-#include "llist.h"
 #include "pstring.h"
 
 #include <cc.h>
@@ -20,9 +19,7 @@
 #include <string.h>
 #include <sys/unistd.h>
 
-extern const char *TAG;
-
-static pstr8_t dns_read_label(char *question)
+pstr8_t dns_read_label(char *question)
 {
 	uint8_t size = (uint8_t) question[0];
 	if (size == 0)

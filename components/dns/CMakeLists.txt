@@ -1,0 +1,12 @@
+idf_component_register(
+	SRCS
+		"dns.c"
+		"dns_log_header.c"
+		"dns_ntoh_header.c"
+		"dns_log_questions.c"
+		"dns_read_labels.c"
+    INCLUDE_DIRS
+		"include"
+	REQUIRES
+		"pstring"
+)

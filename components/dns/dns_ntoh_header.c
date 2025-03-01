@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                              ++            */
-/*   server.h                                                  +**+   +*  *   */
+/*   dns_ntoh_header.c                                         +**+   +*  *   */
 /*                                                             ##%#*###*+++   */
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
-/*   Created: 2025/02/19 12:37:48 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 18:34:23 by aboyreau          +#-.-*  +         *    */
+/*   Created: 2025/03/01 18:10:32 by aboyreau          **+*+  * -_._-   #+    */
+/*   Updated: 2025/03/01 18:10:55 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
-#ifndef SERVER_H
-#define SERVER_H
+#include "cc.h"
+#include "dns.h"
 
-#ifndef TAG
-#define TAG "SERVER"
-#endif
-
-#include <lwip/netdb.h>
-
-int	 server_setup(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 create_socket(int addr_family, struct sockaddr_in6 *dest_addr);
-int	 bind_socket_to_port(int sock, struct sockaddr_in6 *dest_addr);
-void udp_server_task(void *pvParameters);
-
-#endif
+void dns_ntoh_header(struct dns_header *header)
+{
+	header->id		= ntohs(header->id);
+	header->flags	= ntohs(header->flags);
+	header->qdcount = ntohs(header->qdcount);
+	header->ancount = ntohs(header->ancount);
+	header->nscount = ntohs(header->nscount);
+	header->arcount = ntohs(header->arcount);
+}

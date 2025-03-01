@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/24 02:30:05 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/24 02:35:11 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/01 18:34:10 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@
 #include <sys/param.h>
 
 #define PORT 53
-
-extern const char *TAG;
 
 int create_socket(int addr_family, struct sockaddr_in6 *dest_addr)
 {
