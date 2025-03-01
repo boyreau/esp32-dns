@@ -6,13 +6,12 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/03/01 11:04:24 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 20:09:24 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/01 20:13:11 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
 #include "cc.h"
 #include "dns.h"
-#include "esp_log.h"
 #include "pstring.h"
 
 #include <string.h>
@@ -55,8 +54,6 @@ struct dns_question dns_parse_question(pstr8_t question, size_t packetlength)
 
 void dns_log_question(struct dns_question question)
 {
-	ESP_LOGI(TAG, "qname	%d	%d", question.qtype, question.qclass);
-
 	write(1, question.qname + 1, pstr8_len(question.qname));
 	write(1, "\t", 1);
 	write(1, dns_type(question.qtype), 1);
