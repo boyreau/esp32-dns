@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/17 22:57:37 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 20:10:05 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 13:13:10 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ struct dns_rr
 		uint32_t ttl;
 		uint16_t rdlength;
 		uint32_t rddata;
-};
+} __attribute__((packed));
 
 struct dns_packet
 {
@@ -130,5 +130,7 @@ pstr8_t dns_read_labels(char *message, size_t messagelen);
 
 struct dns_question dns_parse_question(pstr8_t question, size_t packetlength);
 void				dns_log_question(struct dns_question question);
+
+void dns_log_packet(struct dns_packet *packet, uint16_t packetsize);
 
 #endif

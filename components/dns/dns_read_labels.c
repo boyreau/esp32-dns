@@ -6,12 +6,11 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/22 18:14:49 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 18:30:26 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 12:19:44 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
 #include "dns.h"
-#include "esp_log.h"
 #include "pstring.h"
 
 #include <cc.h>
@@ -70,6 +69,5 @@ pstr8_t dns_read_labels(char *message, size_t messagelen)
 		index += pstr8_len(label) + 1;
 		free(label);
 	}
-	ESP_LOGI(TAG, "DNS labels parsed");
 	return domain_name;
 }

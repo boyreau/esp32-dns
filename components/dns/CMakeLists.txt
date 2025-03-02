@@ -1,10 +1,12 @@
 idf_component_register(
 	SRCS
 		"dns.c"
-		"dns_log_header.c"
 		"dns_ntoh_header.c"
-		"dns_log_questions.c"
 		"dns_read_labels.c"
+		"dns_parse_question.c"
+		"log/dns_log_question.c"
+		"log/dns_log_header.c"
+		"log/dns_log_packet.c"
     INCLUDE_DIRS
 		"include"
 	REQUIRES
