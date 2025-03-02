@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/20 22:24:39 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/24 03:24:39 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 13:05:53 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "trie.h"
 
 #include <ctype.h>
+#include <errno.h>
+#include <esp_log.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,15 +35,16 @@ uint8_t trie_indexof(int c)
 	return i;
 }
 
-void trie_add(struct trie_s *head, const pstr8_t str)
+void trie_add(struct trie_s *head, const pstr8_t str, uint32_t ip)
 {
 	for (uint8_t i = 1; i <= *str; i++)
 	{
 		uint8_t index = trie_indexof(str[i]);
-		if (head->children[index] == NULL)
-			head->children[index] = malloc(sizeof(trie_t));
+		if (head != NULL && head->children[index] == NULL)
+			head->children[index] = calloc(sizeof(trie_t), 1);
 		head = head->children[index];
 	}
+	head->children[0] = (void *) ip;
 }
 
 void trie_display(struct trie_s *head, uint8_t depth, char str[])
