@@ -1,0 +1,6 @@
+[submodule "components/dns"]
+	path = components/dns
+	url = ../libdns
+[submodule "components/pstring"]
+	path = components/pstring
+	url = ../libpstring
