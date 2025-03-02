@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/20 22:24:39 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/02 13:05:53 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 17:53:02 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "trie.h"
 
 #include <ctype.h>
-#include <errno.h>
 #include <esp_log.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,24 +44,6 @@ void trie_add(struct trie_s *head, const pstr8_t str, uint32_t ip)
 		head = head->children[index];
 	}
 	head->children[0] = (void *) ip;
-}
-
-void trie_display(struct trie_s *head, uint8_t depth, char str[])
-{
-	if (head->children[0] != NULL)
-	{
-		str[depth] = 0;
-		pstr8_rev(str);
-		printf("%s\n", str);
-	}
-	for (uint8_t i = 0; i <= DNS_CHARSET_LEN; i++)
-	{
-		if (head->children[i] != NULL)
-		{
-			str[depth] = DNS_CHARSET[i];
-			trie_display(head->children[i], depth + 1, str);
-		}
-	}
 }
 
 void *trie_get(struct trie_s *head, pstr8_t str)

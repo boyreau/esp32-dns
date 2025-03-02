@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/19 12:37:58 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/02 13:12:34 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 17:19:22 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 	struct dns_header *header = &packet.header;
 
 	static struct trie_s head = {0};
-	trie_add(&head, "\nsciodog.fr", 603187885);
+	trie_add(&head, (pstr8_t) "\nsciodog.fr", 603187885);
 
 	messagelen = receive_packet(sock, source_addr, &packet);
 	if (messagelen < 0)

@@ -5,8 +5,6 @@ idf_component_register(
 						"src/server.c"
 						"src/handler.c"
 
-						"src/list.c"
-
 						"src/trie/trie.c"
 
                     INCLUDE_DIRS
