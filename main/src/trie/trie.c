@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/20 22:24:39 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/02 17:53:02 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 20:27:54 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -51,7 +51,9 @@ void *trie_get(struct trie_s *head, pstr8_t str)
 	for (uint8_t i = 1; i <= pstr8_len(str); i++)
 	{
 		int index = trie_indexof(str[i]);
-		if (head->children[index] == NULL)
+		if (index < 0 || index > DNS_CHARSET_LEN)
+			return NULL;
+		if (head != NULL && head->children[index] == NULL)
 			return NULL;
 		head = head->children[index];
 	}

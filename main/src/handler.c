@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/19 12:37:58 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/02 17:19:22 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 21:09:39 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -53,12 +53,16 @@ receive_packet(int sock, struct sockaddr_storage *source_addr, void *packet)
 
 static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 {
-	int				   messagelen = 0;
-	struct dns_packet  packet;
-	struct dns_header *header = &packet.header;
+	int				  messagelen = 0;
+	struct dns_packet packet;
 
+	static bool			 init = true;
 	static struct trie_s head = {0};
-	trie_add(&head, (pstr8_t) "\nsciodog.fr", 603187885);
+	if (init)
+	{
+		trie_add(&head, (pstr8_t) "\nsciodog.fr", 603187885);
+		init = false;
+	}
 
 	messagelen = receive_packet(sock, source_addr, &packet);
 	if (messagelen < 0)
@@ -66,26 +70,27 @@ static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 		ESP_LOGE(TAG, "Error occurred during receive: errno %d", errno);
 		return -1;
 	}
-	dns_ntoh_header(header);
+	dns_log_header(&packet.header);
+	dns_ntoh_header(&packet.header);
+	// dns_log_header(&packet.header);
 
 	// Update header
-	header->qr		= 1;
-	header->opcode	= 0;
-	header->rd		= 0;
-	header->ra		= 0;
-	header->rcode	= 0;
-	header->ancount = 0;
-	header->arcount = 0;
+	packet.header.qr	  = 1;
+	packet.header.rd	  = 0;
+	packet.header.ra	  = 0;
+	packet.header.rcode	  = 0;
+	packet.header.ancount = 0;
+	packet.header.arcount = 0;
 
-	char	*rr		  = malloc(DNS_PACKET_SIZE_MAX);
-	uint16_t rr_index = 0;
-	uint16_t index	  = DNS_HEADER_BYTE_SIZE;
-	for (uint16_t i = 0; i < header->qdcount; i++)
+	char	 rr[DNS_PACKET_SIZE_MAX] = {0};
+	uint16_t rr_index				 = 0;
+	uint16_t index					 = DNS_HEADER_BYTE_SIZE;
+	for (uint16_t i = 0; i < packet.header.qdcount; i++)
 	{
 		char			   *question_address = (char *) &packet + index;
 		struct dns_question q =
 			dns_parse_question((void *) question_address, messagelen - index);
-		dns_log_question(q);
+		// dns_log_question(q);
 
 		uint32_t ip = (uint32_t) trie_get(&head, q.qname);
 		if (ip == 0)
@@ -97,7 +102,7 @@ static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 		struct dns_rr an = {
 			.type	  = htons(1),
 			.class	  = htons(1),
-			.ttl	  = htonl(0),
+			.ttl	  = htonl(300),
 			.rdlength = htons(4),
 			.rddata	  = htonl(ip)
 		};
@@ -113,15 +118,16 @@ static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 		index += 4; // qtype + qclass size
 
 		free(q.qname);
-		header->ancount++;
+		packet.header.ancount++;
 	}
 
-	dns_ntoh_header(header);
+	dns_log_header(&packet.header);
+	dns_hton_header(&packet.header);
 	memcpy(packet.raw + index, rr, rr_index);
 
 	sendto(
 		sock,
-		&packet,
+		(char *) &packet,
 		index + rr_index,
 		0,
 		(struct sockaddr *) source_addr,
@@ -134,6 +140,7 @@ int handle_request(int sock, struct sockaddr_storage *source_addr)
 {
 	while (1)
 	{
+		ESP_LOGI(TAG, "R");
 		if (receive_and_respond(sock, source_addr))
 			return -1;
 	}

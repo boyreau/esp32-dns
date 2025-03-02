@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/20 17:27:47 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/02 17:53:19 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 20:27:50 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "pstring.h"
 
 #define DNS_CHARSET_LEN 38
-// % is 37, it makes DNS_CHARSET is a valid pstring
+// % is 37, it makes DNS_CHARSET a valid pstring
 #define DNS_CHARSET "%abcdefghijklmnopqrstuvwxyz0123456789-."
 
 typedef struct array_s
