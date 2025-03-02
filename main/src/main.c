@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/24 02:29:51 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/02/24 02:39:08 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/02 11:57:59 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -32,5 +32,6 @@ void app_main(void)
 	 * examples/protocols/README.md for more information about this function.
 	 */
 	ESP_ERROR_CHECK(example_connect());
+	setvbuf(stdout, NULL, _IONBF, 0);
 	xTaskCreate(udp_server_task, "udp_server", 4096, (void *) AF_INET, 5, NULL);
 }
