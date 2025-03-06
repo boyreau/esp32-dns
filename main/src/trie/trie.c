@@ -6,10 +6,12 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/20 22:24:39 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/02 20:27:54 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/06 12:07:10 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
+#include "lwip/opt.h"
+#include "lwipopts.h"
 #include "pstring.h"
 #include "trie.h"
 
@@ -58,4 +60,36 @@ void *trie_get(struct trie_s *head, pstr8_t str)
 		head = head->children[index];
 	}
 	return head->children[0];
+}
+
+void trie_explore(
+	struct trie_s *head,
+	uint8_t		   depth,
+	char		   str[],
+	void		   (*f)(void *, void *)
+)
+{
+	if (head == NULL)
+		return;
+	if (head->children[0] != NULL)
+	{
+		str[depth] = 0;
+		pstr8_rev(str);
+		str[0] = (char) depth;
+		f(str, head->children[0]);
+	}
+	for (uint8_t i = 1; i <= DNS_CHARSET_LEN; i++)
+	{
+		if (head->children[i] != NULL)
+		{
+			str[depth] = DNS_CHARSET[i];
+			trie_explore(head->children[i], depth + 1, str, f);
+		}
+	}
+}
+
+void trie_iter(struct trie_s *head, void (*f)(void *, void *))
+{
+	char str[DNS_MAX_NAME_LENGTH];
+	trie_explore(head, 0, str, f);
 }

@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/19 12:37:48 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/03 19:05:52 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/06 10:35:01 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -26,6 +26,6 @@ int	 bind_socket_to_port(int sock, struct sockaddr_in6 *dest_addr);
 void udp_server_task(void *pvParameters);
 
 // HTTP
-void http_server(void *_);
+void http_server(void *trie_head);
 
 #endif

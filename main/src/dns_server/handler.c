@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/19 12:37:58 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/02 21:09:39 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/06 10:39:08 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -51,18 +51,14 @@ receive_packet(int sock, struct sockaddr_storage *source_addr, void *packet)
 	return len;
 }
 
-static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
+static int receive_and_respond(
+	int sock,
+	struct sockaddr_storage *restrict source_addr,
+	trie_t *head
+)
 {
 	int				  messagelen = 0;
 	struct dns_packet packet;
-
-	static bool			 init = true;
-	static struct trie_s head = {0};
-	if (init)
-	{
-		trie_add(&head, (pstr8_t) "\nsciodog.fr", 603187885);
-		init = false;
-	}
 
 	messagelen = receive_packet(sock, source_addr, &packet);
 	if (messagelen < 0)
@@ -92,7 +88,7 @@ static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 			dns_parse_question((void *) question_address, messagelen - index);
 		// dns_log_question(q);
 
-		uint32_t ip = (uint32_t) trie_get(&head, q.qname);
+		uint32_t ip = (uint32_t) trie_get(head, q.qname);
 		if (ip == 0)
 		{
 			// TODO Recursive query
@@ -136,12 +132,12 @@ static int receive_and_respond(int sock, struct sockaddr_storage *source_addr)
 	return 0;
 }
 
-int handle_request(int sock, struct sockaddr_storage *source_addr)
+int handle_request(int sock, struct sockaddr_storage *source_addr, void *trie_head)
 {
 	while (1)
 	{
 		ESP_LOGI(TAG, "R");
-		if (receive_and_respond(sock, source_addr))
+		if (receive_and_respond(sock, source_addr, trie_head))
 			return -1;
 	}
 }

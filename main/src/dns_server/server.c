@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/24 02:30:05 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/01 18:34:10 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/06 10:37:22 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -67,7 +67,8 @@ int server_setup(int addr_family, struct sockaddr_in6 *dest_addr)
 
 void udp_server_task(void *pvParameters)
 {
-	int					addr_family = (int) pvParameters;
+	int					addr_family = (int) ((void **) pvParameters)[0];
+	void			   *trie_head	= ((void **) pvParameters)[1];
 	struct sockaddr_in6 dest_addr;
 
 	while (1)
@@ -75,7 +76,7 @@ void udp_server_task(void *pvParameters)
 		int						sock = server_setup(addr_family, &dest_addr);
 		struct sockaddr_storage source_addr;
 
-		int err = handle_request(sock, &source_addr);
+		int err = handle_request(sock, &source_addr, trie_head);
 		if (err < 0)
 		{
 			ESP_LOGE(TAG, "Shutting down socket and restarting...");
