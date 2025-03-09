@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/24 02:29:51 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/08 22:23:56 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/09 17:11:01 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -58,18 +58,16 @@ void app_main(void)
 	ESP_ERROR_CHECK(example_connect());
 	setvbuf(stdout, NULL, _IONBF, 0);
 
-	static struct trie_s head		 = {0};
-	pstr8_t				 custom_name = "\nrf.godoics\0";
-	trie_add(&head, custom_name, 603187885);
+	static struct trie_s head = {0};
 
-	xTaskCreate(
-		udp_server_task,
-		"dns_server",
-		4096,
-		(void *[]) {(void *) AF_INET, &head},
-		5,
-		NULL
-	);
-	xTaskCreate(http_server, "http_server", 16384, &head, 5, NULL);
 	mDNS_server();
+	// xTaskCreate(
+	// 	udp_server_task,
+	// 	"dns_server",
+	// 	4096,
+	// 	(void *[]) {(void *) AF_INET, &head},
+	// 	5,
+	// 	NULL
+	// );
+	http_server(&head);
 }

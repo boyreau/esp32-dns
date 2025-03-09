@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/03/03 18:30:42 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/08 22:47:03 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/09 16:40:14 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void http_server(void *trie_head)
 	httpd_config_t config	 = HTTPD_DEFAULT_CONFIG();
 	config.lru_purge_enable	 = true;
 	config.keep_alive_enable = false;
+	config.stack_size		 = 4 * 4096;
 
 	if (httpd_start(&server, &config) != ESP_OK)
 		return;

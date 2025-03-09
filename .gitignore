@@ -2,3 +2,5 @@ build/
 .cache/
 dependencies.lock
 pytest_tcp_server.py
+sdkconfig
+sdkconfig*
