@@ -6,9 +6,8 @@ idf_component_register(
 						"src/dns_server/handler.c"
 
 						"src/web_server/server.c"
-
-						"src/trie/trie.c"
-
+						"src/web_server/get_index.c"
+						"src/web_server/post_index.c"
                     INCLUDE_DIRS
 						"include"
 					REQUIRES
@@ -18,6 +17,8 @@ idf_component_register(
 						"esp_netif"
 						"nvs_flash"
 						"dns"
+						"pstring"
+						"trie"
 					EMBED_TXTFILES
 						"index.html"
 					)

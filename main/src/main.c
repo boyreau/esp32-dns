@@ -6,17 +6,18 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/24 02:29:51 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/06 11:59:01 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/08 22:23:56 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
+#include "dns_server.h"
 #include "esp_event.h"
 #include "esp_netif.h"
 #include "mdns.h"
 #include "nvs_flash.h"
 #include "protocol_examples_common.h"
-#include "server.h"
 #include "trie.h"
+#include "web_server.h"
 
 #include <lwip/netdb.h>
 #include <stdio.h>
@@ -69,6 +70,6 @@ void app_main(void)
 		5,
 		NULL
 	);
-	xTaskCreate(http_server, "http_server", 4096, &head, 5, NULL);
+	xTaskCreate(http_server, "http_server", 16384, &head, 5, NULL);
 	mDNS_server();
 }

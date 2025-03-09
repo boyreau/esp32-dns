@@ -6,14 +6,14 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/24 02:30:05 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/06 10:37:22 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/08 09:24:34 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
+#include "dns_server.h"
 #include "esp_log.h"
 #include "handler.h"
 #include "lwip/sockets.h"
-#include "server.h"
 
 #include <lwip/netdb.h>
 #include <stdio.h>

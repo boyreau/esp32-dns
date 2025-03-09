@@ -4,3 +4,6 @@
 [submodule "components/pstring"]
 	path = components/pstring
 	url = ../libpstring
+[submodule "components/trie"]
+	path = components/trie
+	url = ../libtrie
