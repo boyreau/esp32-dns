@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/24 02:29:51 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/09 17:11:01 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/10 12:21:41 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ void app_main(void)
 	static struct trie_s head = {0};
 
 	mDNS_server();
-	// xTaskCreate(
-	// 	udp_server_task,
-	// 	"dns_server",
-	// 	4096,
-	// 	(void *[]) {(void *) AF_INET, &head},
-	// 	5,
-	// 	NULL
-	// );
+	xTaskCreate(
+		udp_server_task,
+		"dns_server",
+		4096,
+		(void *[]) {(void *) AF_INET, &head},
+		5,
+		NULL
+	);
 	http_server(&head);
 }

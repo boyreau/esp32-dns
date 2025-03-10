@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/02/19 12:37:58 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/06 10:39:08 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/10 12:46:47 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -66,9 +66,7 @@ static int receive_and_respond(
 		ESP_LOGE(TAG, "Error occurred during receive: errno %d", errno);
 		return -1;
 	}
-	dns_log_header(&packet.header);
 	dns_ntoh_header(&packet.header);
-	// dns_log_header(&packet.header);
 
 	// Update header
 	packet.header.qr	  = 1;
@@ -86,10 +84,9 @@ static int receive_and_respond(
 		char			   *question_address = (char *) &packet + index;
 		struct dns_question q =
 			dns_parse_question((void *) question_address, messagelen - index);
-		// dns_log_question(q);
 
-		uint32_t ip = (uint32_t) trie_get(head, q.qname);
-		if (ip == 0)
+		uint32_t ip = (uint32_t) trie_get(head, pstr8_rev(q.qname));
+		if (ip == (uint32_t) -1)
 		{
 			// TODO Recursive query
 			free(q.qname);
@@ -117,7 +114,6 @@ static int receive_and_respond(
 		packet.header.ancount++;
 	}
 
-	dns_log_header(&packet.header);
 	dns_hton_header(&packet.header);
 	memcpy(packet.raw + index, rr, rr_index);
 
@@ -136,7 +132,6 @@ int handle_request(int sock, struct sockaddr_storage *source_addr, void *trie_he
 {
 	while (1)
 	{
-		ESP_LOGI(TAG, "R");
 		if (receive_and_respond(sock, source_addr, trie_head))
 			return -1;
 	}

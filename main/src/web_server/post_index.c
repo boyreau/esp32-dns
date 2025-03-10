@@ -6,7 +6,7 @@
 /*   By: aboyreau <bnzlvosnb@mozmail.com>                     +**+ -- ##+     */
 /*                                                            # *   *. #*     */
 /*   Created: 2025/03/08 10:08:22 by aboyreau          **+*+  * -_._-   #+    */
-/*   Updated: 2025/03/09 20:01:37 by aboyreau          +#-.-*  +         *    */
+/*   Updated: 2025/03/10 12:14:25 by aboyreau          +#-.-*  +         *    */
 /*                                                     *-.. *   ++       #    */
 /* ************************************************************************** */
 
@@ -91,8 +91,6 @@ static void parse_formdata(char *formdata, ...)
 			value_end = strchr(value_start, '\0');
 		dest[0] = (char) (value_end - value_start);
 		memcpy(dest + 1, value_start, dest[0]);
-		dest[(dest[0] + 1)] = 0;
-		ESP_LOGI(TAG, "Key: %s; value: %s", key, dest + 1);
 	}
 	va_end(l);
 }
@@ -118,7 +116,9 @@ static char *receive_content(httpd_req_t *req)
 static void display_trie(void *s, void *ip)
 {
 	(void) ip;
-	write(1, s, strlen(s));
+	pstr8_t str = s;
+	write(1, str, *str);
+	write(1, str + 1, pstr8_len(str));
 	write(1, "\n", 1);
 }
 
@@ -139,11 +139,9 @@ esp_err_t post_handler(httpd_req_t *req)
 
 	parse_formdata(content, "DNS", dns, "IP", ip, NULL);
 
-	lwip_inet_pton(AF_INET, ip, &(sa.sin_addr));
-	pstr8_rev((pstr8_t) dns);
-	trie_add(head, dns, ntohl(sa.sin_addr.s_addr));
+	lwip_inet_pton(AF_INET, ip + 1, &(sa.sin_addr));
+	trie_add(head, pstr8_rev(dns), ntohl(sa.sin_addr.s_addr));
 	free(content);
-	trie_apply(head, display_trie);
 
 	httpd_resp_set_status(req, "302");
 	httpd_resp_set_hdr(req, "Location", "http://dns.local");
